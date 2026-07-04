@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// "Users" table storing public registrations submitted via the form.
+// Note: this is unrelated to the single administrator account, which is
+// authenticated purely from ADMIN_EMAIL / ADMIN_PASSWORD env vars and is
+// never stored in the database.
+model User {
+  id                Int      @id @default(autoincrement())
+  fullName          String   @map("full_name")
+  phoneNumber       String   @unique @map("phone_number")
+  bankName          String   @map("bank_name")
+  registrationDate  DateTime @default(now()) @map("registration_date") @db.Date
+  registrationTime  String   @map("registration_time") // stored as HH:mm for easy display
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([registrationDate])
+  @@index([fullName])
+  @@index([bankName])
+  @@map("users")
+}
